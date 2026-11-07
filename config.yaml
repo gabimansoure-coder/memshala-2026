@@ -1,6 +1,6 @@
 # הגדרות האתר והאוטומציה. את state.yaml עורכים לעדכון המצב; את הקובץ הזה רק לשינוי מקורות.
 
-site_url: https://gabimansoure-coder.github.io/memshala-2026/
+site_url: https://memshala.gabimansour.com/
 repo: gabimansoure-coder/memshala-2026
 uid_domain: memshala-2026.gabimansoure-coder.github.io
 calendar_name: הרכבת הממשלה 2026

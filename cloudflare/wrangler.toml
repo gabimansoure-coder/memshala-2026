@@ -1,0 +1,9 @@
+# Cloudflare Worker for the custom domain. Deploy once with:  cd cloudflare && wrangler deploy
+# Cloudflare creates the DNS record and the HTTPS certificate for the custom domain itself.
+name = "memshala-2026"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+routes = [
+  { pattern = "memshala.gabimansour.com", custom_domain = true },
+]

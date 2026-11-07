@@ -2,9 +2,9 @@
 
 אתר קטן שעוקב אחרי הליך הרכבת הממשלה אחרי הבחירות לכנסת ה־26, ויומן (`.ics`) שאפשר להירשם אליו באייפון ובמק. האתר והיומן מתעדכנים לבד.
 
-- **האתר:** https://gabimansoure-coder.github.io/memshala-2026/
-- **היומן:** `webcal://gabimansoure-coder.github.io/memshala-2026/calendar.ics`
-- **יומן תרחישים (אופציונלי):** `webcal://gabimansoure-coder.github.io/memshala-2026/scenarios.ics`
+- **האתר:** https://memshala.gabimansour.com/
+- **היומן:** `webcal://memshala.gabimansour.com/calendar.ics`
+- **יומן תרחישים (אופציונלי):** `webcal://memshala.gabimansour.com/scenarios.ics`
 
 המועדים לא נכתבים ביד. הם מחושבים מקובץ אחד, [`state.yaml`](state.yaml), לפי חוק־יסוד: הממשלה.
 
@@ -21,7 +21,7 @@
 
 ### במק
 1. פותחים את **לוח שנה**. בתפריט **קובץ** בוחרים **מנוי חדש ללוח שנה**.
-2. מדביקים את הכתובת `webcal://gabimansoure-coder.github.io/memshala-2026/calendar.ics` ולוחצים **הרשמה**.
+2. מדביקים את הכתובת `webcal://memshala.gabimansour.com/calendar.ics` ולוחצים **הרשמה**.
 3. ב**רענון אוטומטי** בוחרים **כל שעה**.
 4. **חשוב:** ליד **הסר** מבטלים את הסימון של **התראות**. אחרת, Apple מוחקת את התזכורות שביומן.
 5. ב**מיקום** בוחרים **iCloud** ולוחצים **אישור**.
@@ -202,6 +202,14 @@ gh secret set ANTHROPIC_API_KEY --repo gabimansoure-coder/memshala-2026
 **מועד שחל בשבת:** לפי סעיף 10(ג) לחוק הפרשנות, ימי מנוחה בסוף תקופה אינם נמנים. אבל ב-2013 הנשיאות קבעה את סוף התקופה בשבת עצמה (2.3.2013), וגם את סוף ההארכה (16.3.2013). לכן ברירת המחדל היא לא לדחות, רק לסמן. אפשר לשנות ב-`state.yaml`: ‏`rules: rest_day_shift: true`.
 
 **בדיקות:** `tests/test_rules.py` בודק את המנוע מול מקרי עבר אמיתיים: אפריל 2019 (הארכה ופיזור), ספטמבר 2019 (נתניהו, גנץ, חלון 21 הימים ופיזור), 2021 (נתניהו, לפיד, ממשלה) ו-2013 (מועד בשבת).
+
+### הדומיין memshala.gabimansour.com
+האתר נבנה ונפרס ל-GitHub Pages (`gabimansoure-coder.github.io/memshala-2026`). על הדומיין שלך יושב Cloudflare Worker קטן ([`cloudflare/worker.js`](cloudflare/worker.js)) שמגיש את אותו תוכן בכתובת `memshala.gabimansour.com`. Cloudflare יצר לבד את רשומת ה-DNS ואת תעודת ה-HTTPS. שתי הכתובות עובדות. השימוש חינמי (המכסה החינמית של Workers היא 100,000 בקשות ביום).
+
+ה-Worker לא מתעדכן בכל ריצה ואין בו סודות. רק אם משנים אותו:
+```bash
+cd cloudflare && wrangler deploy
+```
 
 ### כלל 60 הימים של GitHub
 GitHub משבית workflow מתוזמן בריפו ציבורי אחרי 60 יום בלי פעילות. בכל ריצה ה-workflow מפעיל את עצמו מחדש דרך ה-API, בלי commit. כגיבוי, אם עברו 50 יום בלי אף commit, נוצר commit ריק אחד.
