@@ -1,0 +1,101 @@
+name: tracker
+
+# כל 30 דקות: בדיקת חדשות, עדכון המצב (רק אם השתנה), בנייה, בדיקת היומן ופריסה.
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write        # commit when the state really changed
+  pull-requests: write   # proposals that need approval
+  pages: write           # deploy
+  id-token: write        # deploy
+  actions: write         # re-enable this workflow (60-day inactivity rule)
+
+concurrency:
+  group: tracker
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      # headline classifications and the news list live in the Actions cache, not in git
+      - name: Restore news cache
+        uses: actions/cache@v6
+        with:
+          path: .cache
+          key: tracker-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: tracker-cache-
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Unit tests
+        run: python -m pytest -q
+
+      - name: Check news and update state
+        if: github.event_name != 'push'
+        continue-on-error: true   # a news or API problem must not stop the deploy
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: python -m tracker.update --git
+
+      - name: Build site and calendars
+        run: python -m tracker.build --out _site
+
+      - name: Validate calendars (a failure blocks the deploy)
+        run: python -m tracker.validate_ics _site/calendar.ics _site/scenarios.ics
+
+      # only after a manual edit of state.yaml: keep SEQUENCE numbers in git
+      - name: Commit calendar registry if it changed
+        run: |
+          if [ -n "$(git status --porcelain -- data/ics_registry.json)" ]; then
+            git add data/ics_registry.json
+            git commit -m "עדכון רישום היומן אחרי שינוי במצב"
+            git pull --rebase --autostash origin main
+            git push origin HEAD:main
+          fi
+
+      # fallback for GitHub's 60-day rule; the main mechanism is the API re-enable in tracker.update
+      - name: Keepalive
+        if: github.event_name == 'schedule'
+        run: |
+          days=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+          if [ "$days" -ge 50 ]; then
+            git commit --allow-empty -m "keepalive: מניעת השבתת התזמון (60 יום בלי פעילות)"
+            git push origin HEAD:main
+          fi
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

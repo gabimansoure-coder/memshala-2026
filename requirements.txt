@@ -1,0 +1,8 @@
+anthropic==2.6.0
+feedparser==6.0.14
+icalendar==7.3.0
+pyluach==2.3.0
+pytest==9.2.0
+requests==2.34.2
+ruamel.yaml==0.19.1
+tzdata==2026.6

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>הרכבת הממשלה 2026</title>
+<meta name="description" content="מעקב עובדתי אחר הליך הרכבת הממשלה אחרי הבחירות לכנסת ה־26: מי מחזיק במנדט, כמה זמן נשאר, ציר זמן, תרחישים ויומן להרשמה.">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111418" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="הרכבת הממשלה 2026">
+<meta property="og:description" content="מי מחזיק במנדט, כמה זמן נשאר, ומה הצפוי לפי חוק־יסוד: הממשלה.">
+<meta property="og:locale" content="he_IL">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">דילוג לתוכן</a>
+<header class="top">
+  <div class="wrap">
+    <h1>הרכבת הממשלה 2026</h1>
+    <p class="sub">מעקב אחר ההליך לפי חוק־יסוד: הממשלה · הכנסת ה־26</p>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <section id="status" class="card status" aria-live="polite">
+    <p class="loading">טוען נתונים…</p>
+  </section>
+
+  <section id="subscribe" class="card subscribe" aria-labelledby="sub-h">
+    <h2 id="sub-h">יומן שמתעדכן לבד</h2>
+    <p class="muted">כל המועדים ביומן של האייפון או המק. כשמשהו משתנה, היומן מתעדכן אוטומטית.</p>
+    <div class="buttons">
+      <a id="webcal" class="btn primary" href="calendar.ics">הוספה ליומן</a>
+      <button id="copy" class="btn" type="button">העתקת הכתובת</button>
+    </div>
+    <details>
+      <summary>איך נרשמים באייפון</summary>
+      <ol>
+        <li>פותחים את העמוד הזה באייפון ולוחצים על <b>הוספה ליומן</b>.</li>
+        <li>בחלון שנפתח לוחצים <b>הרשמה</b> (Subscribe).</li>
+        <li>בשדה <b>חשבון</b> כדאי לבחור <b>iCloud</b>, כדי שהיומן יופיע גם במק. לוחצים <b>הוסף</b>.</li>
+      </ol>
+      <p class="muted">דרך נוספת: הגדרות ← לוח שנה ← חשבונות ← הוספת חשבון ← אחר ← הוספת לוח שנה מנוי, ומדביקים את הכתובת.</p>
+    </details>
+    <details>
+      <summary>איך נרשמים במק</summary>
+      <ol>
+        <li>פותחים את אפליקציית <b>לוח שנה</b>, ובתפריט <b>קובץ</b> בוחרים <b>מנוי חדש ללוח שנה</b>.</li>
+        <li>מדביקים את הכתובת (כפתור "העתקת הכתובת") ולוחצים <b>הרשמה</b>.</li>
+        <li>ב<b>רענון אוטומטי</b> בוחרים <b>כל שעה</b>.</li>
+        <li>חשוב: ליד <b>הסר</b> מבטלים את הסימון של <b>התראות</b>, אחרת התזכורות יימחקו.</li>
+        <li>ב<b>מיקום</b> כדאי לבחור <b>iCloud</b>, ולוחצים <b>אישור</b>.</li>
+      </ol>
+    </details>
+    <p class="scn">רוצים לראות גם את מועדי התרחישים החלופיים? <a id="webcal-scn" href="scenarios.ics">יומן תרחישים</a> (נפרד, אופציונלי).</p>
+  </section>
+
+  <section class="card" aria-labelledby="tl-h">
+    <h2 id="tl-h">ציר זמן</h2>
+    <p class="legend"><span class="badge official">רשמי</span> הוכרז רשמית · <span class="badge computed">מחושב</span> נגזר מהחוק, טרם הוכרז</p>
+    <ol id="timeline" class="timeline"></ol>
+  </section>
+
+  <section class="card" aria-labelledby="sc-h">
+    <h2 id="sc-h">מה יכול לקרות מכאן</h2>
+    <p class="muted">לכל מסלול מוצג המועד <b>המאוחר ביותר</b> שהחוק מאפשר. אירוע מוקדם, כמו החזרת מנדט לפני הזמן, מקדים את כל המועדים שאחריו.</p>
+    <div id="tree" class="tree"></div>
+  </section>
+
+  <section class="card" aria-labelledby="news-h">
+    <h2 id="news-h">חדשות אחרונות</h2>
+    <ul id="news" class="news"></ul>
+    <p class="muted small">כותרות וקישורים בלבד, מתוך פידי RSS של אתרי החדשות.</p>
+  </section>
+
+  <section id="warnings" class="card warn" hidden></section>
+</main>
+
+<footer class="foot wrap">
+  <p id="updated"></p>
+  <p>המועדים מחושבים לפי <a href="https://main.knesset.gov.il/Activity/Legislation/Laws/Pages/LawPrimary.aspx?lawitemid=2000040" rel="noopener">חוק־יסוד: הממשלה</a> (סעיפים 7–13), <a href="https://main.knesset.gov.il/Activity/Legislation/Laws/Pages/LawPrimary.aspx?lawitemid=2000510" rel="noopener">חוק הפרשנות</a> (סעיף 10) ו<a href="https://main.knesset.gov.il/Activity/Legislation/Laws/Pages/LawPrimary.aspx?lawitemid=2000191" rel="noopener">חוק הבחירות לכנסת</a> (סעיף 86). מועד "מחושב" הוא תוצאה של חישוב, לא הודעה רשמית.</p>
+  <p>אתר עצמאי ולא רשמי, ללא שיוך פוליטי. <a id="repo" href="#" rel="noopener">קוד פתוח ומקור הנתונים</a></p>
+</footer>
+<script src="app.js" defer></script>
+</body>
+</html>

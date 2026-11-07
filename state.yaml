@@ -1,0 +1,78 @@
+# ==========================================================================
+#  state.yaml — מקור האמת של האתר ושל היומן
+# ==========================================================================
+#  כאן רשומות רק עובדות: אירועים שקרו או שהוכרזו רשמית.
+#  את המועדים (סוף 28 הימים, חלון 21 הימים, מועד בחירות וכו') המנוע מחשב
+#  לבד לפי חוק־יסוד: הממשלה. אין צורך לכתוב אותם כאן.
+#
+#  לכל אירוע:
+#    id       מזהה קבוע באנגלית (לא לשנות אחרי שנוצר, ממנו נגזר ה-UID ביומן)
+#    type     סוג האירוע (רשימה ב-README)
+#    date     תאריך בפורמט YYYY-MM-DD (שעון ישראל)
+#    time     שעה, למשל "17:00" (במירכאות). רק לאירועים עם שעה ידועה.
+#    status   official = הוכרז רשמית | computed = נגזר/משוער
+#    source   קישור למקור
+#    origin   manual (ברירת מחדל) או auto (נוסף על ידי האוטומציה)
+#
+#  עריכה ידנית גוברת תמיד: האוטומציה רק מוסיפה אירועים חדשים, ולעולם
+#  לא משנה או מוחקת אירוע קיים. אם מחקת אירוע שהאוטומציה הוסיפה, היא
+#  זוכרת זאת (data/automation.json) ולא תוסיף אותו שוב.
+# ==========================================================================
+
+knesset: 26
+title: הרכבת הממשלה 2026
+
+rules:
+  # false = מועד שחל בשבת/חג לא נדחה (כמו בתקדים 2013), רק מסומן.
+  # true  = נדחה ליום החול הבא לפי סעיף 10(ג) לחוק הפרשנות.
+  rest_day_shift: false
+
+events:
+  - id: election
+    type: election
+    date: 2026-10-27
+    status: official
+    source: https://www.maariv.co.il/news/politics/article-1357269
+
+  - id: results-published
+    type: results_published
+    date: 2026-11-04
+    status: official
+    note: יו"ר ועדת הבחירות המרכזית הגיש לנשיא את התוצאות הרשמיות. מועד הפרסום ברשומות טרם אומת; המועדים שנגזרים ממנו מחושבים מ־4.11.
+    source: https://www.srugim.co.il/101015283-סולברג-הקולות-שמטילים-דופי-בתוצאות
+
+  - id: consultations
+    type: consultations
+    date: 2026-11-04
+    end_date: 2026-11-05
+    status: official
+    note: 67 חברי כנסת המליצו על גדי איזנקוט (יו"ר "ישר!"), 46 על בנימין נתניהו (ראש הממשלה היוצא), 7 לא המליצו על איש.
+    source: https://www.israelnationalnews.com/news/435750
+
+  - id: president-announcement
+    type: announcement
+    date: 2026-11-07
+    status: official
+    title: הנשיא הרצוג הודיע שיטיל את המנדט על גדי איזנקוט
+    source: https://www.ynet.co.il/news/article/Hkj95lTTfx
+
+  - id: mandate-r1
+    type: mandate_assigned
+    round: 1
+    candidate: גדי איזנקוט
+    party: ישר!
+    date: 2026-11-08
+    time: "17:00"
+    location: בית הנשיא, ירושלים
+    status: official
+    source: https://www.inn.co.il/news/710256
+
+  - id: knesset-opening
+    type: knesset_opening
+    date: 2026-11-10
+    time: "16:00"
+    duration_minutes: 180
+    location: משכן הכנסת, ירושלים
+    status: official
+    note: השבעת 120 חברי הכנסת ובחירת יו"ר הכנסת. שעת הסיום משוערת.
+    source: https://www.jns.org/news/israel-news/israels-26th-knesset-set-to-be-inaugurated-nov-10

@@ -1,0 +1,125 @@
+# הגדרות האתר והאוטומציה. את state.yaml עורכים לעדכון המצב; את הקובץ הזה רק לשינוי מקורות.
+
+site_url: https://gabimansoure-coder.github.io/memshala-2026/
+repo: gabimansoure-coder/memshala-2026
+uid_domain: memshala-2026.gabimansoure-coder.github.io
+calendar_name: הרכבת הממשלה 2026
+scenarios_name: הרכבת הממשלה 2026 — תרחישים
+
+# מודל הסיווג (רק אם הוגדר ANTHROPIC_API_KEY כ-secret)
+model: claude-haiku-5-5
+
+# שינוי מוחל אוטומטית רק אם לפחות כך מקבוצות תקשורת שונות מאשרות אותו
+min_independent_sources: 2
+
+# כמה ימים אחורה מצרפים כותרות לאותו אירוע
+lookback_days: 10
+
+# שמות נוספים שבהם מופיעים אנשים בכותרות (הראשון = השם כפי שהוא ב-state.yaml)
+people:
+  גדי איזנקוט: [איזנקוט, אייזנקוט, Eisenkot, Eizenkot]
+  בנימין נתניהו: [נתניהו, Netanyahu]
+  יצחק הרצוג: [הרצוג, Herzog]
+
+feeds:
+  # Google News: חיפוש בכל אתרי החדשות; כל כותרת משויכת למפרסם המקורי שלה
+  - {name: google-he-mandate, url: "https://news.google.com/rss/search?q=%D7%90%D7%99%D7%96%D7%A0%D7%A7%D7%95%D7%98+%D7%9E%D7%A0%D7%93%D7%98+when:7d&hl=he&gl=IL&ceid=IL:he"}
+  - {name: google-he-formation, url: "https://news.google.com/rss/search?q=%D7%94%D7%A8%D7%9B%D7%91%D7%AA+%D7%94%D7%9E%D7%9E%D7%A9%D7%9C%D7%94+when:7d&hl=he&gl=IL&ceid=IL:he"}
+  - {name: google-he-extension, url: "https://news.google.com/rss/search?q=%D7%94%D7%90%D7%A8%D7%9B%D7%94+%D7%94%D7%A8%D7%9B%D7%91%D7%AA+%D7%9E%D7%9E%D7%A9%D7%9C%D7%94+when:7d&hl=he&gl=IL&ceid=IL:he"}
+  - {name: google-he-confidence, url: "https://news.google.com/rss/search?q=%D7%94%D7%A6%D7%91%D7%A2%D7%AA+%D7%90%D7%9E%D7%95%D7%9F+%D7%9E%D7%9E%D7%A9%D7%9C%D7%94+when:7d&hl=he&gl=IL&ceid=IL:he"}
+  - {name: google-he-dissolution, url: "https://news.google.com/rss/search?q=%D7%A4%D7%99%D7%96%D7%95%D7%A8+%D7%94%D7%9B%D7%A0%D7%A1%D7%AA+when:7d&hl=he&gl=IL&ceid=IL:he"}
+  - {name: google-en, url: "https://news.google.com/rss/search?q=Eisenkot+coalition+OR+mandate+when:7d&hl=en-IL&gl=IL&ceid=IL:en"}
+  # פידים ישירים
+  - {name: ynet, url: "https://www.ynet.co.il/Integration/StoryRss2.xml", publisher: ynet.co.il}
+  - {name: haaretz, url: "https://www.haaretz.co.il/srv/htz---all-articles", publisher: haaretz.co.il}
+  - {name: maariv, url: "https://www.maariv.co.il/Rss/RssFeedsPolitiMedini", publisher: maariv.co.il}
+  - {name: israelhayom, url: "https://www.israelhayom.co.il/rss.xml", publisher: israelhayom.co.il}
+  - {name: inn, url: "https://www.inn.co.il/Rss.aspx", publisher: inn.co.il}
+  - {name: timesofisrael, url: "https://www.timesofisrael.com/feed/", publisher: timesofisrael.com}
+  - {name: jpost, url: "https://www.jpost.com/rss/rssfeedsisraelnews.aspx", publisher: jpost.com}
+  - {name: ynetnews, url: "https://www.ynetnews.com/Integration/StoryRss3082.xml", publisher: ynetnews.com}
+
+# רק כותרות מאתרי החדשות האלה מוצגות באתר ונספרות כמקורות (Google News מחזיר גם אתרים מחו"ל
+# שמעתיקים ידיעות סוכנות, ואלה אינם מקורות בלתי תלויים)
+israeli_sources: [ynet.co.il, ynetnews.com, calcalist.co.il, haaretz.co.il, haaretz.com, themarker.com,
+  maariv.co.il, jpost.com, walla.co.il, israelhayom.co.il, israelhayom.com, makorrishon.co.il, inn.co.il,
+  israelnationalnews.com, timesofisrael.com, zman.co.il, mako.co.il, n12.co.il, kan.org.il, 13tv.co.il,
+  c14.co.il, now14.co.il, i24news.tv, globes.co.il, srugim.co.il, kikar.co.il, bhol.co.il, davar1.co.il,
+  emess.co.il, jdn.co.il, ice.co.il, news1.co.il, themedialine.org, jns.org]
+
+# אתרים בבעלות משותפת או קשורה נספרים כמקור אחד (לבדיקת "2 מקורות בלתי תלויים")
+publisher_groups:
+  yedioth: [ynet.co.il, ynetnews.com, calcalist.co.il, vesty.co.il, ynetespanol.com]
+  haaretz: [haaretz.co.il, haaretz.com, themarker.com]
+  jpost-maariv-walla: [maariv.co.il, jpost.com, walla.co.il]
+  israelhayom: [israelhayom.co.il, israelhayom.com, makorrishon.co.il]
+  inn: [inn.co.il, israelnationalnews.com]
+  timesofisrael: [timesofisrael.com, zman.co.il]
+  keshet: [mako.co.il, n12.co.il]
+  channel14: [c14.co.il, now14.co.il]
+  kan: [kan.org.il]
+  reshet: [13tv.co.il]
+
+publisher_names:
+  ynet.co.il: ynet
+  ynetnews.com: ynetnews
+  haaretz.co.il: הארץ
+  haaretz.com: Haaretz
+  maariv.co.il: מעריב
+  jpost.com: The Jerusalem Post
+  walla.co.il: וואלה
+  israelhayom.co.il: ישראל היום
+  israelhayom.com: Israel Hayom
+  makorrishon.co.il: מקור ראשון
+  inn.co.il: ערוץ 7
+  israelnationalnews.com: Arutz Sheva
+  timesofisrael.com: The Times of Israel
+  zman.co.il: זמן ישראל
+  mako.co.il: N12
+  n12.co.il: N12
+  kan.org.il: כאן
+  c14.co.il: C14
+  now14.co.il: עכשיו 14
+  i24news.tv: i24NEWS
+  srugim.co.il: סרוגים
+  kikar.co.il: כיכר השבת
+  bhol.co.il: בחדרי חרדים
+  davar1.co.il: דבר
+  emess.co.il: אמס
+  jdn.co.il: JDN
+  ice.co.il: ice
+  news1.co.il: News1
+  jns.org: JNS
+  themedialine.org: The Media Line
+  13tv.co.il: רשת 13
+  globes.co.il: גלובס
+  calcalist.co.il: כלכליסט
+
+# כותרת נחשבת רלוונטית אם יש בה אחד מהביטויים האלה
+relevance:
+  - מנדט
+  - הרכבת הממשלה
+  - הרכבת ממשלה
+  - להרכיב ממשלה
+  - הרכיב ממשלה
+  - הצבעת אמון
+  - השבעת הממשלה
+  - הממשלה הושבעה
+  - פיזור הכנסת
+  - התפזרות הכנסת
+  - הכנסת התפזרה
+  - הארכה
+  - ארכה
+  - קואליצי
+  - איזנקוט
+  - אייזנקוט
+  - mandate
+  - coalition
+  - form a government
+  - forming a government
+  - formed a government
+  - government formation
+  - confidence vote
+  - sworn in
+  - dissolve
+  - Eisenkot
