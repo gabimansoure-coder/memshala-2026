@@ -166,7 +166,7 @@ gh secret set ANTHROPIC_API_KEY --repo gabimansoure-coder/memshala-2026
 
 ```
 כל 30 דקות (GitHub Actions)
-  ├─ שליפת כותרות מ-RSS: Google News (כמה חיפושים), ynet, הארץ, מעריב, ישראל היום, ערוץ 7, Times of Israel, JPost, ynetnews
+  ├─ שליפת כותרות מ-RSS: Google News (כמה חיפושים), ynet, הארץ, מעריב, ישראל היום, ערוץ 7, JPost, ynetnews
   ├─ סיווג: Claude Haiku (עם מפתח) או מילות מפתח (בלי)
   ├─ 2+ מקורות בלתי תלויים, והמנוע מאשר → commit ל-state.yaml
   │   אחרת → Pull Request לאישור

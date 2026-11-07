@@ -57,6 +57,11 @@ def close_pr(repo: str, number: int, comment: str) -> None:
     run("gh", "pr", "close", str(number), "--repo", repo, "--comment", comment, "--delete-branch", check=False)
 
 
-def enable_workflow(repo: str, workflow: str) -> None:
+def enable_workflow(repo: str, workflow: str) -> bool:
     """Re-enable the scheduled workflow (resets GitHub's 60-day inactivity timer)."""
-    run("gh", "api", "-X", "PUT", f"repos/{repo}/actions/workflows/{workflow}/enable", check=False)
+    try:
+        run("gh", "api", "-X", "PUT", f"repos/{repo}/actions/workflows/{workflow}/enable")
+        return True
+    except RuntimeError as e:
+        print(f"::warning::keepalive (enable workflow) failed: {e}")
+        return False

@@ -35,7 +35,7 @@ feeds:
   - {name: maariv, url: "https://www.maariv.co.il/Rss/RssFeedsPolitiMedini", publisher: maariv.co.il}
   - {name: israelhayom, url: "https://www.israelhayom.co.il/rss.xml", publisher: israelhayom.co.il}
   - {name: inn, url: "https://www.inn.co.il/Rss.aspx", publisher: inn.co.il}
-  - {name: timesofisrael, url: "https://www.timesofisrael.com/feed/", publisher: timesofisrael.com}
+  # Times of Israel חוסם את שרתי GitHub (403); הכותרות שלו מגיעות דרך Google News
   - {name: jpost, url: "https://www.jpost.com/rss/rssfeedsisraelnews.aspx", publisher: jpost.com}
   - {name: ynetnews, url: "https://www.ynetnews.com/Integration/StoryRss3082.xml", publisher: ynetnews.com}
 

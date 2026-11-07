@@ -342,13 +342,13 @@ def run(now: datetime, dry_run: bool = False, git: bool = False) -> dict[str, An
             except RuntimeError as e:
                 log.append(f"פתיחת PR נכשלה: {e}")
 
-    if git and not dry_run:
-        gitops.enable_workflow(repo, "tracker.yml")
+    keepalive = gitops.enable_workflow(repo, "tracker.yml") if git and not dry_run else None
 
     out = {
         "mode": mode, "headlines": len(headlines), "detections": len(dets),
         "applied": [p.summary() for p in applied], "proposed": [p.summary() for p, _, _ in proposed],
         "pull_requests": pr_urls, "feed_errors": feed_errors, "classifier_errors": cls_errors, "log": log,
+        "keepalive": keepalive,
     }
     step_summary([f"### ריצת עדכון {now:%d.%m.%Y %H:%M}", f"- מצב סיווג: {mode}",
                   f"- כותרות רלוונטיות: {len(headlines)}, זיהויים: {len(dets)}",
