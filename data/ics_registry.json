@@ -1,128 +1,128 @@
 {
   "appeals-deadline@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "41359429ab27e42ea42a6fd4c16aa5a363015279af1101013e43f3d0e06c467c",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "7a470c497d580f125a078a23bfdbfd30a1799f4c48de761ac143da728f7be847",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "consultations@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "879e626328c45b3b1995762047257f1b435846ad2234ba8bfae2d99b1e909544",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "9e2f58dd7158f4ab84256bb5c60120137968906d9a1bcf187133fee2b21485d3",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "election@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "84f88c454e1c9f66990a88b30fdbf608237a118be90084997aa66db4dfaf23e8",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "1055f97379df178fd8baedb3893ef7e4b6cf46df63024af66149431b2867545f",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "knesset-opening@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "74c4964850d1fac7f508480354757edaff42caf992398d68b39345b59aa6be66",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "9e7249a36987c98f4bd0a985ef51e8e5bcec25d1442d406b4633dcf3a6029300",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "mandate-r1@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "00b3ac11f3029b1102f12d5bc3dd64394d9b9d67a93fdc4bc09fced9ef2f8bdf",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "d3420a10c5a3083e544bbf56647c9d93aedf94cebff67fa1782a32e44bd6198f",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "president-announcement@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "4eaea8ad13e22a80ccb0968a1077a7d90cfee1fc26446b4daf65b5879a604e78",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "6bf1455081daf4728f5da71a6adb6110953a99d6814cd04cfbe8a1760c7ce58c",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "r1-deadline@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "fe62fb46a492203e5149cde1fe76df83ce52a9957a681e3119e2199d787e8a04",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "b8d22ca98c3306459b4cd83fc0ffc3e6d68d08505bd8be666c602214b40c01b3",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "r1-max-extension@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "11350ce2eafa4fc114e5e9e75dccc4f327e63aa36fea8206a4649f0b65113e07",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "65f678d4acad77f8ddf0b42ac3b35ae5c4e0afa2ea3912aa1b1dd85e5a857d7a",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "results-published@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "449f6f4485e1a2509212d8a6a523b5b4e09ee34e0068ff60fdfcd01777fc14d1",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "8c1d87c7290377f7257c1a47e275a36fe92a9010c07077af82655f03b122fb2b",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-ext@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "0c07eb6bb54b56828c9bc4125030aa27b92229e31f6e6cbb4a2720e16bc7d119",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "94dc37ec07109161994dae46c0b15bca4c1376a755b105bb00d53c072cc8c44e",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-none-61-r3-fail-elect@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "fea615100228f5001c97a6ed32366dfcbfc5de6b82c1c610ba8e815a27e407c5",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "1e89d8fa37659d5bfdd0c3c1edbc22e758fb69dbcafa4b93a3146ebd7d30c4f6",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-none-61-r3-fail@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "c3f49a2320bd3bc8fdefc6ff43f72257d06f936eb4ab5f00afe850b78ab81c99",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "7d3222c442d2824d355feac0e69f65ba11e9073e0314a0470a06867e658033db",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-none-61@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "41e9b34f714b129e1bc493d7c78321bff2a1815834c4f88431e9af61527bced9",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "6bdea8a3194fcddb0d794354cb270d98bd75c467d4515e1492dae99900eca1f3",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-none-noreq-elect@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "942a023bc2d79460b6a7eab941d6e9e0c676a5703c243ae3cfd18cecce59f810",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "ab964eccbae918efc1e17487315754ff966b92d5b40b43a01441e49fe6fd5e5c",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-r2-fail-61-r3-fail-elect@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "e2cd608f3abeda7a584c3b21fc3c8bba423554176d39908a90f1fcf590c7e205",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "addcf6246dd0dd4ea83d8d856bf6e6d61570a7444ccb951d3c593a87a3df6860",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-r2-fail-61-r3-fail@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "4db3ebeb39ca5d604d45b1cf13e853fb7d2cfac5363c4fd42f5f3759a0348f76",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "d0b0090069f443aff555acc4e3c82e89d71600b635cbf42e367b838de6620b48",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-r2-fail-61@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "ef3784136eb04b1dfe31de2c225881dbd0193c8aead86416fbf11889e4580558",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "236c53946fb1d4d6c0f11e93913d072c236da5b3106ccac82b32bf0422b94ab6",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-r2-fail-noreq-elect@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "2a4a40c955a9bf5bbbcf2cc8ed0f5357836b92274bc7d3b422eecba9fc4ba7cb",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "0861a1c6742903f9e9ec5368aa4fd1df183b4a09bb9a64722cc28ec2b9c417bb",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-r2-fail@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "edd0164dec1b447e1dc19fc4dce46593952c0cd0707b66c7fb4a15a44bbfdbb4",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "dc374f5ad03b118c5ed3c5b1955eaf9440b03dae4f6ae3a21020ed1a7ca6d3c1",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-fail-r2@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "ccdbdeed2418e6d4cbdbf0b3ac32c0ff3d9528b61e566dca83b153ef16746929",
-    "modified": "20261107T205218Z",
-    "sequence": 0
+    "hash": "dcd5fd17e0dc1602f2eb3e673490848f9a7c6f36c72c6258a5eb7a5ef6fdeb09",
+    "modified": "20261107T211612Z",
+    "sequence": 1
   },
   "scn-a-ok-vote@memshala-2026.gabimansoure-coder.github.io": {
     "created": "20261107T205218Z",
-    "hash": "e35f223faca6ba779c7ec4dc5128bad99e658b25f8fcc3a68ed45f7d3a66ef9f",
-    "modified": "20261107T205338Z",
-    "sequence": 1
+    "hash": "1599819605f7a9401b858d2ae3dd4710cc2e1a355bfdf814a89065618e5002ca",
+    "modified": "20261107T211612Z",
+    "sequence": 2
   }
 }
