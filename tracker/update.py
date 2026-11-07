@@ -271,8 +271,13 @@ def run(now: datetime, dry_run: bool = False, git: bool = False) -> dict[str, An
     proposed: list[tuple[Proposal, CommentedMap, list[str]]] = []
     log: list[str] = []
     base_warnings = set(res.warnings)
+    # news from before the current mandate was assigned cannot change the current round
+    assigned = [d for e in state["events"] if e.get("type") == "mandate_assigned" and (d := _as_date(e.get("date")))]
+    floor = max(assigned) if assigned else None
 
     for p in cluster(dets, by_id):
+        if floor and p.date < floor:
+            continue
         matching = [pr for pr in prs if pr.get("meta") and _same(pr["meta"], p)]
         open_prs = [pr for pr in matching if pr["state"] == "OPEN"]
         if already_in_state(p, state["events"]):

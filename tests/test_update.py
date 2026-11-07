@@ -19,12 +19,30 @@ def h(hid, title, domain, when="2026-12-03T20:00:00+02:00"):
 @pytest.mark.parametrize("title,kind,days", [
     ("הנשיא העניק לאיזנקוט הארכה של 14 ימים להרכבת הממשלה", "extension_granted", 14),
     ("איזנקוט קיבל ארכה של שבועיים", "extension_granted", 14),
+    ("הנשיא הרצוג האריך את המנדט של איזנקוט ב-14 ימים", "extension_granted", 14),
+    ("המנדט של איזנקוט הוארך בשבועיים", "extension_granted", 14),
+    ("איזנקוט קיבל עוד שבועיים להרכבת הממשלה", "extension_granted", 14),
     ("Herzog grants Eisenkot 10-day extension to form government", "extension_granted", 10),
+    ("Herzog extends Eisenkot's mandate by 14 days", "extension_granted", 14),
+    ("איזנקוט פנה לנשיא בבקשה להאריך את המנדט", "extension_requested", None),
     ("איזנקוט החזיר את המנדט לנשיא", "mandate_returned", None),
+    ("איזנקוט השיב את המנדט לנשיא", "mandate_returned", None),
+    ("איזנקוט הודיע לנשיא: לא הצלחתי להרכיב ממשלה", "mandate_returned", None),
+    ("איזנקוט ויתר על המנדט", "mandate_returned", None),
     ("Eisenkot returns mandate to Herzog", "mandate_returned", None),
+    ("Eisenkot tells Herzog he cannot form a government", "mandate_returned", None),
     ("איזנקוט הודיע לנשיא כי הצליח להרכיב ממשלה", "success_notice", None),
+    ("יש ממשלה: איזנקוט הודיע לנשיא כי עלה בידו להרכיב ממשלה", "success_notice", None),
+    ("Eisenkot informs Herzog he has managed to form a government", "success_notice", None),
     ("הממשלה החדשה הושבעה", "confidence_vote", None),
+    ("הממשלה ה-38 הושבעה", "confidence_vote", None),
+    ("הכנסת הביעה אמון בממשלת איזנקוט", "confidence_vote", None),
+    ("ממשלת איזנקוט זכתה באמון הכנסת", "confidence_vote", None),
+    ("Knesset approves Eisenkot government in 64-52 vote", "confidence_vote", None),
     ("הכנסת התפזרה: הולכים לבחירות", "dissolution_law", None),
+    ("הכנסת ה-26 התפזרה; הבחירות ייערכו במרץ", "dissolution_law", None),
+    ("חוק פיזור הכנסת אושר בקריאה שלישית", "dissolution_law", None),
+    ("הנשיא הודיע ליו\"ר הכנסת: אין אפשרות להרכיב ממשלה", "president_no_possibility", None),
 ])
 def test_keyword_detection(title, kind, days):
     dets = classify_keywords([h("x", title, "ynet.co.il")], CTX)
@@ -34,13 +52,37 @@ def test_keyword_detection(title, kind, days):
     assert dets[0].candidate == "גדי איזנקוט"
 
 
+@pytest.mark.parametrize("title,candidate", [
+    ("הנשיא הטיל על נפתלי בנט את המשימה להרכיב ממשלה", "נפתלי בנט"),
+    ("Herzog tasks Netanyahu with forming the government", "בנימין נתניהו"),
+    ("61 ח\"כים חתמו על בקשה להטיל את הרכבת הממשלה על נתניהו", "בנימין נתניהו"),
+])
+def test_keyword_detects_other_candidates(title, candidate):
+    dets = classify_keywords([h("x", title, "ynet.co.il")], CTX)
+    assert len(dets) == 1 and dets[0].candidate == candidate
+
+
+def test_vote_counts_from_headline():
+    d = classify_keywords([h("x", "Knesset approves Eisenkot government in 64-52 vote", "jpost.com")], CTX)[0]
+    assert (d.result, d.votes_for, d.votes_against) == ("passed", 64, 52)
+
+
 @pytest.mark.parametrize("title", [
-    "איזנקוט יבקש הארכה",                         # future
-    "האם איזנקוט יצליח להרכיב ממשלה?",            # question
-    "Eisenkot expected to ask for an extension",  # hedge
-    "MKs sworn in as 26th Knesset convenes",      # not the government
-    "בליכוד דורשים: איזנקוט יחזיר את המנדט",       # a demand, not a fact
-    "פרשנות: הדרך הארוכה להרכבת ממשלה",          # no event
+    "איזנקוט יבקש הארכה",                                   # future
+    "האם איזנקוט יצליח להרכיב ממשלה?",                      # question
+    "Eisenkot expected to ask for an extension",            # hedge
+    "MKs sworn in as 26th Knesset convenes",                # not the government
+    "בליכוד דורשים: איזנקוט יחזיר את המנדט",                 # a demand
+    "הליכוד: איזנקוט צריך להחזיר את המנדט",                   # "to return", not "returned"
+    "נתניהו קורא לאיזנקוט להחזיר את המנדט",                   # a call
+    "איזנקוט: לא אחזיר את המנדט",                            # a refusal
+    "בכנסת מעריכים: הארכה תינתן בשבוע הבא",                  # assessment
+    "הכנסת אישרה בקריאה ראשונה את חוק פיזור הכנסת",           # not final
+    "שנה להשבעת הממשלה",                                     # anniversary
+    "פרשנות: הדרך הארוכה להרכבת ממשלה",                      # no event
+    "איזנקוט יקבל את המנדט מחר בבית הנשיא",                   # future
+    "ש\"ס המליצה להרצוג להטיל את מלאכת הרכבת הממשלה על נתניהו",  # a recommendation
+    "Shas recommends Herzog task Netanyahu with forming the government",
 ])
 def test_keyword_ignores_non_events(title):
     assert classify_keywords([h("x", title, "ynet.co.il")], CTX) == []
@@ -151,3 +193,10 @@ def test_ai_mode_parses_structured_output_and_caches(monkeypatch):
     assert set(cache) == {"a", "b"}
     cl.classify(hs, CTX, CFG, cache)     # cached: no second API call
     assert len(calls) == 1
+
+
+def test_news_from_before_the_current_mandate_is_ignored(monkeypatch):
+    # 4.11 is before the mandate assigned on 8.11, so it cannot change the current round
+    hs = [h("a", "הנשיא הטיל על נתניהו את המשימה להרכיב ממשלה", "ynet.co.il", "2026-11-04T20:00:00+02:00")]
+    out = run_with(monkeypatch, hs, datetime(2026, 11, 9, 10, tzinfo=TZ))
+    assert out["applied"] == [] and out["proposed"] == []

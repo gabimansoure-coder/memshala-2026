@@ -49,63 +49,90 @@ class Detection:
 # keyword mode
 
 HEDGES = re.compile(
-    r"(\?|יבקש|תבקש|ישקול|שוקל|צפוי|צפויה|עשוי|עשויה|ייתכן|אולי|האם|בכוונת|מתכוון|מתכוונת|"
-    r"יחזיר|תחזיר|יעניק|תעניק|ייתן|תיתן|דורש|דורשים|קורא|קוראים|"
-    r"\bwill\b|\bexpected\b|\bmay\b|\bmight\b|\bcould\b|\bset to\b|\bplans?\b|\blikely\b|\bconsider|\bwould\b|\bif\b)",
+    r"(\?|יבקש|תבקש|ישקול|שוקל|שוקלת|צפוי|צפויה|צפויים|עשוי|עשויה|עלול|עלולה|ייתכן|אולי|האם|בכוונת|"
+    r"מתכוון|מתכוונת|יחזיר|תחזיר|יעניק|תעניק|יאריך|תאריך|תוארך|יוארך|ייתן|תיתן|יוטל|יטיל|תטיל|יקבל|תקבל|"
+    r"יתפזר|תתפזר|יושבע|תושבע|דורש|דורשת|דורשים|קורא|קוראת|קוראים|מאיים|איום|סיכוי|תרחיש|"
+    r"צריך|צריכה|חייב|חייבת|מעריכים|הערכה|להערכת|"
+    r"המליץ|המליצה|המליצו|ממליץ|ממליצה|ממליצים|תמליץ|ימליץ|ימליצו|המלצה|המלצות|"
+    r"\bwill\b|\bexpected\b|\bmay\b|\bmight\b|\bcould\b|\bset to\b|\bplans?\b|\blikely\b|\bconsider|"
+    r"\bwould\b|\bif\b|\bthreat|\burges?\b|\bcalls? (on|for)\b|\bpreliminary\b|\brecommend)",
     re.IGNORECASE)
 
-PATTERNS: dict[str, list[str]] = {
-    "extension_granted": [
-        r"(העניק|העניקה|נתן|נתנה|אישר|אישרה|קיבל|קיבלה)\s.*(הארכה|ארכה)",
-        r"(הארכה|ארכה)\s.*(אושרה|ניתנה|הוענקה)",
-        r"\b(granted|grants|gets|got|given|receives|received)\b.*\bextension\b",
-        r"\bextension\b.*\b(granted|approved)\b",
-    ],
-    "extension_requested": [
-        r"(ביקש|ביקשה|מבקש|מבקשת|פנה|פנתה)\s.*(הארכה|ארכה)",
-        r"\b(requests|requested|asks for|asked for|seeks|sought)\b.*\bextension\b",
-    ],
-    "mandate_returned": [
-        r"(החזיר|החזירה|מחזיר|מחזירה)\s.*מנדט",
-        r"מנדט\S*\s.*הוחזר",
-        r"\breturn(s|ed)?\b.*\bmandate\b",
-        r"\bgives? up\b.*\b(bid|mandate|forming)\b",
-        r"\bfail(s|ed)? to form\b",
-    ],
-    "success_notice": [
-        r"(הצליח|הצליחה)\s+להרכיב\s+ממשלה",
-        r"(הודיע|הודיעה|עדכן|עדכנה)\s.*(לנשיא|להרצוג).*(הרכיב|הצליח)",
-        r"\b(succeeded|managed)\b.*\bform(ed|ing)?\b.*\bgovernment\b",
-        r"\b(informs|informed|tells|told|notifies|notified)\b.*\b(president|herzog)\b.*\b(formed|succeeded)\b",
-    ],
-    "confidence_vote_passed": [
-        r"הממשלה\s+(החדשה\s+)?הושבעה",
-        r"הכנסת\s+(אישרה|הביעה\s+אמון\s+ב)\s*(את\s+)?ה?ממשלה",
-        r"(הממשלה|ממשלת\s+\S+)\s+זכתה\s+באמון",
-        r"\bgovernment\b.*\bsworn in\b",
-        r"\bwins?\b.*\bconfidence vote\b",
-        r"\bknesset approves\b.*\bgovernment\b",
-    ],
-    "confidence_vote_failed": [
-        r"הכנסת\s+דחתה\s.*ממשלה",
-        r"הממשלה\s+לא\s+(קיבלה|זכתה\s+ב)\s*אמון",
-        r"\bfails?\b.*\bconfidence vote\b",
-    ],
-    "dissolution_law": [
-        r"הכנסת\s+התפזרה",
-        r"חוק\s+(פיזור|התפזרות)\s+הכנסת\s+(אושר|עבר)",
-        r"\bknesset (dissolves|dissolved|votes to dissolve)\b",
-    ],
-    "president_no_possibility": [
+MK_HE = r"(חברי\s+כנסת|ח[\"״]כים|ח[\"״]כ)"
+W = r"(?<![\u05D0-\u05EA])"  # start of a Hebrew word
+
+# Ordered: the first rule that matches wins. Negative outcomes come before positive
+# ones ("לא הצליח להרכיב ממשלה" is a return, not a success).
+RULES: list[tuple[str, list[str]]] = [
+    ("mandate_returned", [
+        W + r"(החזיר|החזירה|מחזיר|מחזירה|השיב|השיבה|משיב|משיבה)\s.{0,30}מנדט",
+        W + r"(ויתר|ויתרה|מוותר|מוותרת)\s+על\s+ה?מנדט",
+        r"מנדט\S*\s.{0,20}(הוחזר|הושב)",
+        W + r"(לא\s+(הצליח|הצליחה|הצלחתי|הצלחנו|עלה\s+בידו|עלה\s+בידי)|אין\s+(בידו|בידי|בידה|ביכולתו))\s+(ל)?הרכיב\s+ממשלה",
+        W + r"(נכשל|נכשלה)\s+(ב|ל)?(הרכבת|הרכיב)",
+        r"\breturn(s|ed|ing)?\b.{0,30}\bmandate\b",
+        r"\bgives?\s+up\b.{0,30}\b(bid|mandate|attempt|effort)",
+        r"\bfail(s|ed)?\s+to\s+form\b",
+        r"\b(cannot|can't|unable\s+to|could\s+not|couldn't)\b.{0,10}\bform\b.{0,20}\bgovernment\b",
+    ]),
+    ("extension_granted", [
+        W + r"(העניק|העניקה|נתן|נתנה|אישר|אישרה|קיבל|קיבלה)\s.{0,40}(הארכה|ארכה)",
+        r"(הארכה|ארכה)\s.{0,30}(אושרה|ניתנה|הוענקה)",
+        W + r"(האריך|האריכה)\s.{0,40}(מנדט|התקופה|המועד|הרכבת)",
+        r"(מנדט|התקופה|המועד)\S*\s.{0,30}הואר(ך|כה)",
+        W + r"(קיבל|קיבלה)\s+(עוד|תוספת\s+של)\s+(\d{1,2}\s+(ימים|יום)|שבועיים|שבוע)",
+        r"\b(grant(s|ed)?|gets|got|given|receives?|received)\b.{0,40}\bextension\b",
+        r"\bextension\b.{0,20}\b(granted|approved)\b",
+        r"\bextend(s|ed)\b.{0,40}\b(mandate|deadline)\b",
+    ]),
+    ("extension_requested", [
+        W + r"(ביקש|ביקשה|מבקש|מבקשת|פנה|פנתה)\s.{0,40}(הארכה|ארכה|להאריך)",
+        r"\b(requests|requested|asks\s+for|asked\s+for|seeks|sought)\b.{0,30}\bextension\b",
+        r"\basks?\b.{0,20}\bmore\s+time\b",
+    ]),
+    ("success_notice", [
+        W + r"(הצליח|הצליחה|הצלחתי)\s+להרכיב\s+ממשלה",
+        r"עלה\s+בידו?\s+להרכיב",
+        W + r"(הודיע|הודיעה|עדכן|עדכנה)\s.{0,30}(לנשיא|להרצוג).{0,40}(הרכיב|הצליח|עלה\s+בידו)",
+        r"\b(succeeded|managed|has\s+managed)\b.{0,20}\bto\s+form\b.{0,20}\bgovernment\b",
+        r"\b(informs|informed|tells|told|notifies|notified)\b.{0,30}\b(president|herzog)\b.{0,40}\b(formed|succeeded|managed)\b",
+    ]),
+    ("confidence_vote_failed", [
+        r"הכנסת\s+דחתה\s.{0,30}ממשל",
+        r"ממשל\S*\s.{0,20}לא\s+(קיבלה|זכתה)\s+(ב)?אמון",
+        r"\b(fails?|failed|loses|lost)\b.{0,20}\bconfidence\s+vote\b",
+    ]),
+    ("confidence_vote_passed", [
+        r"ממשל\S*.{0,30}הושבעה",
+        r"הכנסת\s+(אישרה|הביעה\s+אמון)\s.{0,20}ממשל",
+        r"ממשל\S*\s.{0,30}זכתה\s+באמון",
+        r"\bgovernment\b.{0,40}\bsworn\s+in\b",
+        r"\bsworn\s+in\b.{0,40}\bgovernment\b",
+        r"\bwins?\b.{0,30}\bconfidence\b",
+        r"\bknesset\s+approves\b.{0,30}\bgovernment\b",
+    ]),
+    ("dissolution_law", [
+        r"הכנסת.{0,15}התפזרה",
+        r"(חוק|הצעת\s+החוק)\s+(ל)?(פיזור|התפזרות)\s+הכנסת\s+(אושר|אושרה|עבר|עברה)",
+        r"\bknesset\b.{0,20}\b(dissolves|dissolved|votes\s+to\s+dissolve)\b",
+    ]),
+    ("president_no_possibility", [
         r"(אינו|איננו)\s+רואה\s+אפשרות",
-        r"\bno (possibility|prospect) of forming\b",
-    ],
-    "majority_request": [
-        r"61\s+(חברי\s+כנסת|ח\"כים|ח״כים)\s.*(ביקשו|חתמו|פנו)",
-        r"\b61 (mks|lawmakers)\b.*\b(asked|signed|requested)\b",
-    ],
-}
-COMPILED = {k: [re.compile(p, re.IGNORECASE) for p in v] for k, v in PATTERNS.items()}
+        r"(הנשיא|הרצוג).{0,40}אין\s+אפשרות\s+(ל)?הרכיב",
+        r"\b(president|herzog)\b.{0,40}\bno\s+(possibility|prospect|way)\b.{0,20}\bform",
+    ]),
+    ("majority_request", [
+        r"61\s+" + MK_HE + r"\s.{0,30}(ביקשו|חתמו|פנו|הגישו)",
+        r"\b61\s+(mks|lawmakers|members)\b.{0,30}\b(asked|signed|request|submitted)",
+    ]),
+    ("mandate_assigned", [
+        r"(הנשיא|הרצוג)\s+(הטיל|מטיל|העניק|העביר)\s.{0,40}(מנדט|המשימה|הרכבת)",
+        r"(הנשיא|הרצוג)\s+.{0,25}" + W + r"(הטיל|העביר)\s.{0,40}(מנדט|המשימה|הרכבת)",
+        r"\b(tasks|tasked|hands|handed|gives|gave|grants|granted)\b.{0,40}\b(mandate|forming|form)\b",
+    ]),
+]
+COMPILED = [(kind, [re.compile(p, re.IGNORECASE) for p in pats]) for kind, pats in RULES]
+EARLY_READING = re.compile(r"קריאה\s+(טרומית|ראשונה|שנייה)|\b(first|second)\s+reading\b", re.IGNORECASE)
 
 
 def parse_days(title: str) -> int | None:
@@ -114,7 +141,7 @@ def parse_days(title: str) -> int | None:
         return int(m.group(1))
     if "שבועיים" in title or re.search(r"\btwo[- ]weeks?\b", title, re.I):
         return 14
-    if re.search(r"(^|\s)שבוע(\s|$)", title) or re.search(r"\b(one|a)[- ]week\b", title, re.I):
+    if re.search(r"(^|\s|ב)שבוע(\s|$)", title) or re.search(r"\b(one|a)[- ]week\b", title, re.I):
         return 7
     return None
 
@@ -125,28 +152,46 @@ def mentioned_people(title: str, people: dict[str, list[str]]) -> list[str]:
             if any(a.lower() in low for a in [name, *aliases])]
 
 
+def classify_one(title: str) -> str | None:
+    if HEDGES.search(title):
+        return None
+    for kind, pats in COMPILED:
+        if any(p.search(title) for p in pats):
+            if kind == "dissolution_law" and EARLY_READING.search(title):
+                return None
+            return kind
+    return None
+
+
 def classify_keywords(headlines: list[Headline], ctx: dict) -> list[Detection]:
     out: list[Detection] = []
     people = ctx.get("people") or {}
     holder = ctx.get("holder")
     for h in headlines:
-        if HEDGES.search(h.title):
+        kind = classify_one(h.title)
+        if kind is None:
             continue
         day = datetime.fromisoformat(h.published).astimezone(TZ).date()
-        for kind, pats in COMPILED.items():
-            if not any(p.search(h.title) for p in pats):
-                continue
-            named = [p for p in mentioned_people(h.title, people) if p not in ("יצחק הרצוג",)]
-            cand = holder if (holder in named or not named) else named[0]
-            d = Detection(h.id, kind, day, candidate=cand, mode="keywords",
-                          confidence="high" if holder and holder in named else "medium")
-            if kind == "extension_granted" or kind == "extension_requested":
-                d.days = parse_days(h.title)
-            if kind.startswith("confidence_vote_"):
-                d.result = "passed" if kind.endswith("passed") else "failed"
-                d.type = "confidence_vote"
-            out.append(d)
-            break
+        named = [p for p in mentioned_people(h.title, people) if p != "יצחק הרצוג"]
+        others = [p for p in named if p != holder]
+        if kind in ("mandate_assigned", "majority_request"):
+            if not named:
+                continue          # who was tasked is the whole point: skip if nobody is named
+            cand = others[0] if others else named[0]
+        else:
+            cand = holder if (holder in named or not others) else others[0]
+        d = Detection(h.id, kind, day, candidate=cand, mode="keywords",
+                      confidence="high" if cand in named else "medium")
+        if kind in ("extension_granted", "extension_requested"):
+            d.days = parse_days(h.title)
+        if kind.startswith("confidence_vote_"):
+            d.result = "passed" if kind.endswith("passed") else "failed"
+            d.type = "confidence_vote"
+            m = re.search(r"(\d{2,3})\s*[-–:]\s*(\d{2,3})", h.title)
+            if m:
+                a, b = sorted((int(m.group(1)), int(m.group(2))), reverse=d.result == "passed")
+                d.votes_for, d.votes_against = a, b
+        out.append(d)
     return out
 
 
