@@ -76,3 +76,17 @@ events:
     status: official
     note: השבעת 120 חברי הכנסת ובחירת יו"ר הכנסת. שעת הסיום משוערת.
     source: https://www.jns.org/news/israel-news/israels-26th-knesset-set-to-be-inaugurated-nov-10
+  - id: auto-confidence-vote-20261110
+    type: confidence_vote
+    date: 2026-11-10
+    candidate: גדי איזנקוט
+    result: passed
+    status: official
+    origin: auto
+    source: https://news.google.com/rss/articles/CBMiiwJBVV95cUxPTERyOFh0c2Q2N1ZIVlFrY1E2R3Eyc1hQNUJmdFNkVVNTamZSYlJ5SVRDVXNkeVJ5MFNVeWtIZXlBY2ZjU3J5bll1anhlZ1FJSnJtajFtSmcyMUloTURSNGpKQ0FPZmVIcVNjS1MxY2NPb24wUGcwaUNRQnJqXzV3N0hXb2ktMmJkOUZmbG9kWV8zVzBUVDh6U3BWTUVrQ3FCYXNmSnpFcVBVelJuLVlJRHJ0dHhOcjRxbnhGX1Z5YXcyb2RPajZzLVBvd0c0dThWZndna1F3RElmdlJLRUdjRnZkN01wYnNybkhnV2FRc29WeGtZNi1WSHpJZjF5Skl0Qzh1Tmk3QVREcDQ?oc=5
+    sources:
+      - publisher: Haaretz
+        title: Israel's New Knesset Sworn in as Eisenkot Seeks to Form Government
+        url: https://news.google.com/rss/articles/CBMiiwJBVV95cUxPTERyOFh0c2Q2N1ZIVlFrY1E2R3Eyc1hQNUJmdFNkVVNTamZSYlJ5SVRDVXNkeVJ5MFNVeWtIZXlBY2ZjU3J5bll1anhlZ1FJSnJtajFtSmcyMUloTURSNGpKQ0FPZmVIcVNjS1MxY2NPb24wUGcwaUNRQnJqXzV3N0hXb2ktMmJkOUZmbG9kWV8zVzBUVDh6U3BWTUVrQ3FCYXNmSnpFcVBVelJuLVlJRHJ0dHhOcjRxbnhGX1Z5YXcyb2RPajZzLVBvd0c0dThWZndna1F3RElmdlJLRUdjRnZkN01wYnNybkhnV2FRc29WeGtZNi1WSHpJZjF5Skl0Qzh1Tmk3QVREcDQ?oc=5
+        published: 2026-11-10T18:04
+    note: הוצע אוטומטית; ממתין לאישור.
