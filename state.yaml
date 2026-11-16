@@ -76,3 +76,16 @@ events:
     status: official
     note: השבעת 120 חברי הכנסת ובחירת יו"ר הכנסת. שעת הסיום משוערת.
     source: https://www.jns.org/news/israel-news/israels-26th-knesset-set-to-be-inaugurated-nov-10
+  - id: auto-extension-requested-20261116
+    type: extension_requested
+    date: 2026-11-16
+    candidate: גדי איזנקוט
+    status: official
+    origin: auto
+    source: https://www.inn.co.il/flashes/1141180
+    sources:
+      - publisher: ערוץ 7
+        title: הליכוד מבקש ארכה לערעור על תוצאות הבחירות
+        url: https://www.inn.co.il/flashes/1141180
+        published: 2026-11-16T18:21
+    note: הוצע אוטומטית; ממתין לאישור.
