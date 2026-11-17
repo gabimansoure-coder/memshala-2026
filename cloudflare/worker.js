@@ -41,9 +41,17 @@ async function proxy(request, url) {
   return response;
 }
 
+const STALE_AFTER = 15 * 60 * 1000;
+
 async function serveLive(env, ctx) {
   let body = await env.LIVE.get("live");
-  if (!body) body = JSON.stringify(await refresh(env));
+  if (!body) {
+    body = JSON.stringify(await refresh(env));
+  } else {
+    // safety net: if a cron run was missed, the next visitor triggers a refresh in the background
+    const age = Date.now() - Date.parse(JSON.parse(body).updated_at || 0);
+    if (!(age < STALE_AFTER)) ctx.waitUntil(refresh(env));
+  }
   return new Response(body, {
     headers: {
       "Content-Type": "application/json; charset=utf-8",

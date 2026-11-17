@@ -140,7 +140,8 @@ def build(out: Path, now: datetime | None = None) -> dict[str, Any]:
     # settings for the Cloudflare Worker (one source of truth: config.yaml)
     live_cfg = {
         "knesset": data["knesset"],
-        "feeds": [f for f in cfg.get("feeds") or [] if f.get("publisher")],
+        "feeds": [f for f in cfg.get("feeds") or []
+                  if f.get("publisher") and f["name"] not in (cfg.get("worker_skip_feeds") or [])],
         "relevance": cfg.get("relevance") or [],
         "publisher_names": cfg.get("publisher_names") or {},
         "news_days": 3,

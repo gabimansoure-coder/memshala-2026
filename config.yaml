@@ -2,6 +2,8 @@
 
 site_url: https://memshala.gabimansour.com/
 live_url: https://memshala.gabimansour.com/live.json
+# פידים שחוסמים את שרתי Cloudflare (403): ה-Worker מדלג עליהם; הם עדיין נבדקים בריצות של GitHub
+worker_skip_feeds: [israelhayom]
 repo: gabimansoure-coder/memshala-2026
 uid_domain: memshala-2026.gabimansoure-coder.github.io
 calendar_name: הרכבת הממשלה 2026
