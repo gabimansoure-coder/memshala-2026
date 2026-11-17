@@ -23,7 +23,7 @@ from typing import Any
 
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
-from . import gitops
+from . import gitops, official
 from .classify import Detection, classify
 from .news import Headline, fetch_all, news_for_site
 from .rules import PHASE_LABELS, TZ, StateError, compute
@@ -53,7 +53,8 @@ class Proposal:
 
     @property
     def mode(self) -> str:
-        return "ai" if any(d.mode == "ai" for d, _ in self.support) else "keywords"
+        modes = {d.mode for d, _ in self.support}
+        return "official" if "official" in modes else ("ai" if "ai" in modes else "keywords")
 
     def meta(self) -> dict[str, Any]:
         return {"type": self.type, "candidate": self.candidate, "date": self.date.isoformat(),
@@ -75,6 +76,7 @@ class Proposal:
             "confidence_vote_scheduled": f"הצבעת האמון נקבעה ל־{d}{' בשעה ' + self.time if self.time else ''}",
             "confidence_vote": f"הצבעת אמון: {'הממשלה אושרה' if self.result == 'passed' else 'הבקשה נדחתה'} ({d})",
             "government_sworn_in": f"השבעת הממשלה ({d})",
+            "speaker_elected": f"נבחר יו\"ר הכנסת: {c} ({d})",
             "president_no_possibility": f"הנשיא הודיע שאין אפשרות להרכיב ממשלה ({d})",
             "majority_request": f"61 ח\"כים ביקשו להטיל את המשימה על {c} ({d})",
             "dissolution_law": f"הכנסת התפזרה ({d})" + (f", בחירות ב־{self.election_date:%d.%m.%Y}"
@@ -156,7 +158,7 @@ def already_in_state(p: Proposal, events: list) -> bool:
     return False
 
 
-def make_entry(p: Proposal, applied: bool, events: list) -> CommentedMap:
+def make_entry(p: Proposal, applied: bool, events: list, official: bool = False) -> CommentedMap:
     base = f"auto-{p.type.replace('_', '-')}-{p.date:%Y%m%d}"
     ids = {str(e.get("id")) for e in events}
     eid, n = base, 2
@@ -182,7 +184,8 @@ def make_entry(p: Proposal, applied: bool, events: list) -> CommentedMap:
         e["election_date"] = p.election_date
     e["status"] = "official"
     e["origin"] = "auto"
-    e["source"] = p.support[0][1].link
+    official_src = [h for _, h in p.support if h.feed == "knesset"]
+    e["source"] = (official_src or [h for _, h in p.support])[0].link
     srcs = CommentedSeq()
     for _, h in p.support[:8]:
         m = CommentedMap()
@@ -192,8 +195,12 @@ def make_entry(p: Proposal, applied: bool, events: list) -> CommentedMap:
         m["published"] = h.published[:16]
         srcs.append(m)
     e["sources"] = srcs
-    e["note"] = (f"נוסף אוטומטית: דווח ב־{len(p.groups)} מקורות בלתי תלויים." if applied
-                 else "הוצע אוטומטית; ממתין לאישור.")
+    if applied and official:
+        e["note"] = "נוסף אוטומטית מהמאגר הרשמי של הכנסת."
+    elif applied:
+        e["note"] = f"נוסף אוטומטית: דווח ב־{len(p.groups)} מקורות בלתי תלויים."
+    else:
+        e["note"] = "הוצע אוטומטית; ממתין לאישור."
     return e
 
 
@@ -227,7 +234,7 @@ def pr_body(p: Proposal, reasons: list[str], entry: CommentedMap) -> str:
             f"### השינוי המוצע ב-state.yaml\n```yaml\n{yaml_txt}\n```\n\n"
             f"**לאישור:** Merge pull request (גם מאפליקציית GitHub). **לדחייה:** Close pull request — "
             f"האוטומציה לא תציע את זה שוב.\n\n"
-            f"זוהה במצב: {'Claude Haiku' if p.mode == 'ai' else 'מילות מפתח'}\n\n"
+            f"זוהה במצב: {({'ai': 'Claude Haiku', 'official': 'המאגר הרשמי של הכנסת'}).get(p.mode, 'מילות מפתח')}\n\n"
             f"<!-- auto-proposal {json.dumps(p.meta(), ensure_ascii=False)} -->\n")
 
 
@@ -259,6 +266,10 @@ def run(now: datetime, dry_run: bool = False, git: bool = False) -> dict[str, An
     ai_ctx = {k: v for k, v in ctx.items() if k not in ("holder", "people")}
     dets, mode, cls_errors = classify(headlines, ai_ctx | {"holder": ctx["holder"], "people": ctx["people"]},
                                       cfg, cache)
+    live = official.fetch_live(cfg.get("live_url"))
+    for det, h in official.detect(live):
+        dets.append(det)
+        by_id[h.id] = h
     if not dry_run:
         save_json(cache_path, {k: v for k, v in cache.items() if k in by_id})
         save_json(CACHE_DIR / "news.json", {"items": news_for_site(headlines), "checked_at": now.isoformat(),
@@ -293,15 +304,16 @@ def run(now: datetime, dry_run: bool = False, git: bool = False) -> dict[str, An
             continue
 
         reasons = []
-        if len(p.groups) < min_src:
+        is_official = official.GROUP in p.groups   # the Knesset's own record
+        if len(p.groups) < min_src and not is_official:
             reasons.append(f"דווח ב־{len(p.groups)} מקור בלתי תלוי בלבד (נדרשים {min_src}).")
-        if p.mode == "keywords" and p.type not in KEYWORD_AUTO:
+        if p.mode == "keywords" and p.type not in KEYWORD_AUTO and not is_official:
             reasons.append("זיהוי לפי מילות מפתח: אירוע מהסוג הזה מוחל רק באישור ידני.")
         if p.type == "extension_granted" and not p.days:
             reasons.append("לא זוהה אורך ההארכה.")
         if p.date > now.date() and p.type != "confidence_vote_scheduled":
             reasons.append("התאריך שזוהה עתידי.")
-        entry = make_entry(p, applied=not reasons, events=state["events"])
+        entry = make_entry(p, applied=not reasons, events=state["events"], official=is_official)
         new_warn = [w for w in engine_warnings(state, entry, now) if w not in base_warnings]
         reasons += [f"מנוע הכללים: {w}" for w in new_warn]
 
@@ -313,7 +325,8 @@ def run(now: datetime, dry_run: bool = False, git: bool = False) -> dict[str, An
             applied.append(p)
             for pr in open_prs:
                 if git and not dry_run:
-                    gitops.close_pr(repo, pr["number"], f"אושר אוטומטית ב־{len(p.groups)} מקורות בלתי תלויים.")
+                    gitops.close_pr(repo, pr["number"], "אושר אוטומטית" + (" מהמאגר הרשמי של הכנסת." if is_official
+                                    else f" ב־{len(p.groups)} מקורות בלתי תלויים."))
         elif open_prs and all(pr.get("mergeable") != "CONFLICTING" for pr in open_prs):
             continue  # already waiting for approval
         else:
@@ -353,7 +366,7 @@ def run(now: datetime, dry_run: bool = False, git: bool = False) -> dict[str, An
         "mode": mode, "headlines": len(headlines), "detections": len(dets),
         "applied": [p.summary() for p in applied], "proposed": [p.summary() for p, _, _ in proposed],
         "pull_requests": pr_urls, "feed_errors": feed_errors, "classifier_errors": cls_errors, "log": log,
-        "keepalive": keepalive,
+        "keepalive": keepalive, "knesset": official.summary(live),
     }
     step_summary([f"### ריצת עדכון {now:%d.%m.%Y %H:%M}", f"- מצב סיווג: {mode}",
                   f"- כותרות רלוונטיות: {len(headlines)}, זיהויים: {len(dets)}",

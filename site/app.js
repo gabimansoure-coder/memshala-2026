@@ -5,6 +5,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const CAT = { ceremony: "טקס", deadline: "מועד סיום", possible: "אפשרי", vote: "הצבעה", milestone: "אירוע", info: "עדכון" };
   let data = null;
+  let live = null;   // Knesset + headlines, refreshed every 10 minutes by the Cloudflare Worker
   let timer = null;
 
   const israelToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
@@ -138,11 +139,77 @@
     return fmtStamp(iso);
   }
 
+  const normTitle = (t) => String(t).replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+
   function renderNews() {
-    const items = data.news || [];
+    const seen = new Set();
+    const items = [...((live && live.news) || []), ...((data && data.news) || [])]
+      .sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
+      .filter((n) => { const k = normTitle(n.title); if (seen.has(k)) return false; seen.add(k); return true; })
+      .slice(0, 25);
     $("news").innerHTML = items.length
       ? items.map((n) => `<li><a dir="auto" href="${esc(n.link)}" target="_blank" rel="noopener">${esc(n.title)}</a><div class="meta">${esc(n.publisher)} · <time datetime="${esc(n.published)}">${ago(n.published)}</time></div></li>`).join("")
       : '<li class="muted">אין עדיין כותרות. הן יופיעו אחרי הבדיקה האוטומטית הבאה.</li>';
+  }
+
+  // ---- the Knesset (official open data) ----
+  const timeHM = (iso) => new Intl.DateTimeFormat("he-IL", { timeZone: TZ, hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+  const dayLabel = (iso) => {
+    const d = new Date(iso);
+    const wd = new Intl.DateTimeFormat("he-IL", { timeZone: TZ, weekday: "long" }).format(d);
+    const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(d);
+    return `${wd}, ${dmy(ymd)}`;
+  };
+
+  function sessionHtml(s, open) {
+    const now = Date.now();
+    const running = !s.finish && Date.parse(s.start) <= now;
+    const when = `${dayLabel(s.start)} · ${timeHM(s.start)}${s.finish ? ` עד ${timeHM(s.finish)}` : ""}`;
+    const badges = [running ? '<span class="badge live">מתקיימת עכשיו</span>' : "",
+      s.special ? '<span class="badge cat">ישיבה מיוחדת</span>' : ""].join("");
+    const items = s.items.length
+      ? `<ol class="agenda">${s.items.map((i) => `<li>${esc(i.name)}</li>`).join("")}</ol>`
+      : '<p class="muted small">סדר היום טרם פורסם.</p>';
+    return `<details class="session" ${open ? "open" : ""}><summary><span class="s-when">${esc(when)}</span> ${badges}</summary>${items}</details>`;
+  }
+
+  function voteHtml(v) {
+    const c = v.counts;
+    const result = v.outcome === "accepted" ? '<span class="badge accepted">התקבל</span>'
+      : v.outcome === "rejected" ? '<span class="badge rejected">נדחה</span>' : '<span class="badge cat">ממתין לתוצאות</span>';
+    const counts = c ? `<span class="tally"><b>${c.for}</b> בעד · <b>${c.against}</b> נגד${c.abstain ? ` · <b>${c.abstain}</b> נמנעים` : ""}</span>` : "";
+    return `<li><div class="v-title" dir="auto">${esc(v.title)}</div>
+      <div class="v-meta">${result} ${counts}</div>
+      <div class="muted small">${esc(dayLabel(v.time))} · ${timeHM(v.time)} · <a href="${esc(v.url)}" target="_blank" rel="noopener">רשומה רשמית</a></div></li>`;
+  }
+
+  function renderKnesset() {
+    const k = live && live.knesset;
+    if (!k) { $("knesset").hidden = true; return; }
+    $("knesset").hidden = false;
+    $("kn-speaker").innerHTML = k.speaker ? `יו"ר הכנסת: <b>${esc(k.speaker.name)}</b>` : "";
+    $("kn-next").innerHTML = (k.upcoming || []).length
+      ? k.upcoming.map((s, i) => sessionHtml(s, i === 0)).join("")
+      : '<p class="muted">לא פורסמה ישיבת מליאה עתידית.</p>';
+    const votes = k.votes || [];
+    $("kn-votes").innerHTML = votes.length ? votes.slice(0, 12).map(voteHtml).join("")
+      : '<li class="muted">אין הצבעות ב־21 הימים האחרונים.</li>';
+    $("kn-recent").innerHTML = (k.recent || []).map((s) => sessionHtml(s, false)).join("");
+    $("kn-updated").textContent = `עודכן: ${fmtStamp(live.updated_at)}`;
+  }
+
+  async function loadLive() {
+    const url = (data && data.links && data.links.live) || "live.json";
+    try {
+      const res = await fetch(`${url}?t=${Math.floor(Date.now() / 60000)}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(res.status);
+      live = await res.json();
+    } catch (e) {
+      return;   // the live layer is optional; the page works without it
+    }
+    renderKnesset();
+    renderNews();
+    renderMeta();
   }
 
   function renderMeta() {
@@ -155,7 +222,8 @@
       catch { prompt("העתיקו את הכתובת:", L.calendar_https); }
     };
     const mode = data.classifier === "ai" ? " · זיהוי אירועים: Claude Haiku" : data.classifier === "keywords" ? " · זיהוי אירועים: מילות מפתח" : "";
-    $("updated").textContent = `בדיקה אחרונה: ${fmtStamp(data.checked_at)} · עדכון אחרון ביומן: ${data.calendar_changed_at ? fmtStamp(data.calendar_changed_at.replace(/^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z$/, "$1-$2-$3T$4:$5:$6Z")) : "—"}${mode}`;
+    const liveTxt = live && live.updated_at ? ` · כנסת וחדשות: ${fmtStamp(live.updated_at)}` : "";
+    $("updated").textContent = `בדיקה אחרונה: ${fmtStamp(data.checked_at)}${liveTxt} · עדכון אחרון ביומן: ${data.calendar_changed_at ? fmtStamp(data.calendar_changed_at.replace(/^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z$/, "$1-$2-$3T$4:$5:$6Z")) : "—"}${mode}`;
     const w = data.warnings || [];
     $("warnings").hidden = !w.length;
     $("warnings").innerHTML = w.length ? `<h2>הערות לבדיקה</h2><ul>${w.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
@@ -176,9 +244,11 @@
     }
     renderStatus(); renderTimeline(); renderTree(); renderNews(); renderMeta(); tick();
     clearInterval(timer); timer = setInterval(tick, 1000);
+    loadLive();
   }
 
   load();
   setInterval(load, 10 * 60 * 1000);
+  setInterval(loadLive, 2 * 60 * 1000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
 })();

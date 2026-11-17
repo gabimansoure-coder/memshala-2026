@@ -107,7 +107,6 @@ RULES: list[tuple[str, list[str]]] = [
         r"הכנסת\s+(אישרה|הביעה\s+אמון)\s.{0,20}ממשל",
         r"ממשל\S*\s.{0,30}זכתה\s+באמון",
         r"\bgovernment\b.{0,40}\bsworn\s+in\b",
-        r"\bsworn\s+in\b.{0,40}\bgovernment\b",
         r"\bwins?\b.{0,30}\bconfidence\b",
         r"\bknesset\s+approves\b.{0,30}\bgovernment\b",
     ]),
@@ -132,6 +131,15 @@ RULES: list[tuple[str, list[str]]] = [
     ]),
 ]
 COMPILED = [(kind, [re.compile(p, re.IGNORECASE) for p in pats]) for kind, pats in RULES]
+# "the Knesset / MKs were sworn in" is the opening of the Knesset, not the new government
+KNESSET_SWORN_IN = re.compile(
+    r"\b(knesset|mks|lawmakers|parliament|members)\b.{0,25}\bsworn\b|הכנסת.{0,15}הושבעה|חברי\s+הכנסת.{0,10}הושבעו",
+    re.IGNORECASE)
+# an extension must be about forming the government, not an appeal, a court case or a budget
+EXT_CONTEXT = re.compile(r"מנדט|הרכבת|להרכיב|ממשלה|mandate|coalition|form(ing)?\s+(a\s+|the\s+)?government",
+                         re.IGNORECASE)
+EXT_EXCLUDE = re.compile(r"ערעור|ערר|עתיר|בג[\"״]ץ|בית\s+המשפט|תקציב|appeal|petition|court|budget|tax",
+                         re.IGNORECASE)
 EARLY_READING = re.compile(r"קריאה\s+(טרומית|ראשונה|שנייה)|\b(first|second)\s+reading\b", re.IGNORECASE)
 
 
@@ -152,12 +160,18 @@ def mentioned_people(title: str, people: dict[str, list[str]]) -> list[str]:
             if any(a.lower() in low for a in [name, *aliases])]
 
 
-def classify_one(title: str) -> str | None:
+def classify_one(title: str, names_someone: bool = False) -> str | None:
+    """Event type of a headline, or None. `names_someone`: a known politician is mentioned."""
     if HEDGES.search(title):
         return None
     for kind, pats in COMPILED:
         if any(p.search(title) for p in pats):
             if kind == "dissolution_law" and EARLY_READING.search(title):
+                return None
+            if kind == "confidence_vote_passed" and KNESSET_SWORN_IN.search(title):
+                return None
+            if kind in ("extension_granted", "extension_requested") and (
+                    EXT_EXCLUDE.search(title) or not (names_someone or EXT_CONTEXT.search(title))):
                 return None
             return kind
     return None
@@ -168,11 +182,11 @@ def classify_keywords(headlines: list[Headline], ctx: dict) -> list[Detection]:
     people = ctx.get("people") or {}
     holder = ctx.get("holder")
     for h in headlines:
-        kind = classify_one(h.title)
+        named = [p for p in mentioned_people(h.title, people) if p != "יצחק הרצוג"]
+        kind = classify_one(h.title, names_someone=bool(named))
         if kind is None:
             continue
         day = datetime.fromisoformat(h.published).astimezone(TZ).date()
-        named = [p for p in mentioned_people(h.title, people) if p != "יצחק הרצוג"]
         others = [p for p in named if p != holder]
         if kind in ("mandate_assigned", "majority_request"):
             if not named:

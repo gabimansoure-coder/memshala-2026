@@ -120,6 +120,8 @@ def build(out: Path, now: datetime | None = None) -> dict[str, Any]:
             "scenarios_webcal": "webcal://" + base.split("://", 1)[1] + "scenarios.ics",
             "repo": f"https://github.com/{cfg['repo']}",
             "state": f"https://github.com/{cfg['repo']}/blob/main/state.yaml",
+            # live Knesset data and headlines, refreshed every 10 minutes by the Cloudflare Worker
+            "live": cfg.get("live_url"),
         },
     }
 
@@ -135,6 +137,15 @@ def build(out: Path, now: datetime | None = None) -> dict[str, Any]:
     (out / "index.html").write_text(html, encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
     (out / "data.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    # settings for the Cloudflare Worker (one source of truth: config.yaml)
+    live_cfg = {
+        "knesset": data["knesset"],
+        "feeds": [f for f in cfg.get("feeds") or [] if f.get("publisher")],
+        "relevance": cfg.get("relevance") or [],
+        "publisher_names": cfg.get("publisher_names") or {},
+        "news_days": 3,
+    }
+    (out / "live-config.json").write_text(json.dumps(live_cfg, ensure_ascii=False, indent=1), encoding="utf-8")
     (out / "calendar.ics").write_bytes(cal_text.encode("utf-8"))
     (out / "scenarios.ics").write_bytes(scn_text.encode("utf-8"))
     return {"registry_changed": registry_changed, "events": len(cal_events), "warnings": res.warnings,

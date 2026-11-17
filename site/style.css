@@ -152,6 +152,24 @@ details li { margin: 4px 0; }
 .news a:hover { text-decoration: underline; }
 .news .meta { font-size: .82rem; color: var(--muted); margin-top: 2px; }
 
+/* the Knesset */
+.knesset h3 { font-size: 1rem; margin: 16px 0 6px; }
+.badge.live { background: var(--accent); color: var(--accent-ink); }
+.badge.accepted { background: var(--official-soft); color: var(--official); }
+.badge.rejected { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+.session { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin: 6px 0; }
+.session:last-of-type { border-bottom: 1px solid var(--line); }
+.session summary { font-weight: 600; gap: 8px; flex-wrap: wrap; }
+.agenda { margin: 6px 0 2px; padding-inline-start: 22px; font-size: .93rem; }
+.agenda li { margin: 3px 0; }
+.votes { list-style: none; margin: 0; padding: 0; }
+.votes li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.votes li:last-child { border-bottom: 0; }
+.v-title { font-weight: 600; }
+.v-meta { margin: 4px 0 2px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tally { font-size: .9rem; color: var(--muted); }
+.tally b { color: var(--ink); }
+
 .warn { background: var(--warn-soft); }
 .foot { color: var(--muted); font-size: .85rem; padding-bottom: 40px; }
 .foot p { margin: 8px 0; }

@@ -83,6 +83,8 @@ def test_vote_counts_from_headline():
     "איזנקוט יקבל את המנדט מחר בבית הנשיא",                   # future
     "ש\"ס המליצה להרצוג להטיל את מלאכת הרכבת הממשלה על נתניהו",  # a recommendation
     "Shas recommends Herzog task Netanyahu with forming the government",
+    "Israel's New Knesset Sworn in as Eisenkot Seeks to Form Government",   # the Knesset, not the government
+    "הליכוד מבקש ארכה לערעור על תוצאות הבחירות",                           # an appeal, not the mandate
 ])
 def test_keyword_ignores_non_events(title):
     assert classify_keywords([h("x", title, "ynet.co.il")], CTX) == []
@@ -117,9 +119,10 @@ def test_already_in_state_respects_manual_entries():
     assert update.already_in_state(p2, events)
 
 
-def run_with(monkeypatch, headlines, now):
+def run_with(monkeypatch, headlines, now, live=None):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.setattr(update, "fetch_all", lambda cfg, n: (headlines, []))
+    monkeypatch.setattr(update.official, "fetch_live", lambda url: live)
     return update.run(now, dry_run=True, git=False)
 
 
@@ -200,3 +203,52 @@ def test_news_from_before_the_current_mandate_is_ignored(monkeypatch):
     hs = [h("a", "הנשיא הטיל על נתניהו את המשימה להרכיב ממשלה", "ynet.co.il", "2026-11-04T20:00:00+02:00")]
     out = run_with(monkeypatch, hs, datetime(2026, 11, 9, 10, tzinfo=TZ))
     assert out["applied"] == [] and out["proposed"] == []
+
+
+# --- official Knesset data ------------------------------------------------------------
+
+from tracker import official  # noqa: E402
+
+LIVE = {
+    "updated_at": "2026-12-14T18:00:00Z",
+    "knesset": {
+        "source": "https://knesset.gov.il/OdataV4/ParliamentInfo/",
+        "speaker": {"name": "פלונית אלמונית", "since": "2026-11-17T00:00:00+02:00"},
+        "upcoming": [{"id": 9, "name": "ישיבה מיוחדת", "start": "2026-12-14T16:00:00+02:00", "finish": None,
+                      "items": [{"ordinal": 1, "name": "הצגת הממשלה והבעת אמון בה", "type": "פעולה על פי חוק"}]}],
+        "recent": [{"id": 4, "name": "ישיבת מליאה בתאריך 17/11/2026 בשעה 16:00", "start": "2026-11-17T16:00:00+02:00",
+                    "finish": "2026-11-17T19:00:00+02:00",
+                    "items": [{"ordinal": 2, "name": "בחירת יושב ראש הכנסת ה-26", "type": "פעולה על פי חוק"}]}],
+        "votes": [
+            {"id": 1, "time": "2026-12-14T19:30:00+02:00", "title": "הבעת אמון בממשלה ה-38", "no_confidence": False,
+             "counts": {"for": 64, "against": 52, "abstain": 0, "total": 116}, "outcome": "accepted", "url": "u1"},
+            {"id": 2, "time": "2026-12-14T12:00:00+02:00", "title": "הצעת אי-אמון בממשלה", "no_confidence": True,
+             "counts": {"for": 50, "against": 60, "abstain": 0, "total": 110}, "outcome": "rejected", "url": "u2"},
+            {"id": 3, "time": "2026-12-10T12:00:00+02:00", "title": "הצעת חוק התפזרות הכנסת העשרים ושש - קריאה ראשונה",
+             "no_confidence": False, "counts": {"for": 70, "against": 10, "abstain": 0, "total": 80},
+             "outcome": "accepted", "url": "u3"},
+        ],
+    },
+}
+
+
+def test_official_detection():
+    found = {(d.type, d.date, d.time, d.result, d.votes_for, d.candidate) for d, _ in official.detect(LIVE)}
+    assert ("confidence_vote_scheduled", date(2026, 12, 14), "16:00", None, None, None) in found
+    assert ("confidence_vote", date(2026, 12, 14), "19:30", "passed", 64, None) in found
+    assert ("speaker_elected", date(2026, 11, 17), None, None, None, "פלונית אלמונית") in found
+    assert not any(t == "dissolution_law" for t, *_ in found)       # first reading only
+    assert len(found) == 3                                           # the no-confidence motion is ignored
+    assert all(h.group == official.GROUP for _, h in official.detect(LIVE))
+
+
+def test_speaker_needs_updated_record():
+    live = {"knesset": {**LIVE["knesset"], "speaker": {"name": "אמיר אוחנה", "since": "2026-11-10T00:00:00+02:00"}}}
+    assert not any(d.type == "speaker_elected" for d, _ in official.detect(live))
+
+
+def test_official_source_applies_without_second_source(monkeypatch):
+    out = run_with(monkeypatch, [], datetime(2026, 11, 18, 10, tzinfo=TZ), live={"knesset": {
+        **LIVE["knesset"], "upcoming": [], "votes": []}})
+    assert out["applied"] == ['נבחר יו"ר הכנסת: פלונית אלמונית (17.11)']
+    assert out["proposed"] == []

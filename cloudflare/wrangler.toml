@@ -1,5 +1,5 @@
-# Cloudflare Worker for the custom domain. Deploy once with:  cd cloudflare && wrangler deploy
-# Cloudflare creates the DNS record and the HTTPS certificate for the custom domain itself.
+# Cloudflare Worker for memshala.gabimansour.com. Deploy with:  cd cloudflare && wrangler deploy
+# Cloudflare created the DNS record and the HTTPS certificate for the custom domain itself.
 name = "memshala-2026"
 main = "worker.js"
 compatibility_date = "2026-10-01"
@@ -7,3 +7,11 @@ workers_dev = false
 routes = [
   { pattern = "memshala.gabimansour.com", custom_domain = true },
 ]
+
+# live data (Knesset + news) refreshed every 10 minutes and served at /live.json
+[triggers]
+crons = ["*/10 * * * *"]
+
+[[kv_namespaces]]
+binding = "LIVE"
+id = "45e67053eaba42a08c68333376affabb"
