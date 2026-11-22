@@ -76,3 +76,16 @@ events:
     status: official
     note: השבעת 120 חברי הכנסת ובחירת יו"ר הכנסת. שעת הסיום משוערת.
     source: https://www.jns.org/news/israel-news/israels-26th-knesset-set-to-be-inaugurated-nov-10
+  - id: auto-mandate-returned-20261119
+    type: mandate_returned
+    date: 2026-11-19
+    candidate: גדי איזנקוט
+    status: official
+    origin: auto
+    source: https://news.google.com/rss/articles/CBMi-AFBVV95cUxQdDF5Zi1RUWNsRHY3Vk9aTGhnWWJjSU1wTzZ5S09OZ1g4WjdkYjB0OXY3bjhuNWJhc052SGQxdl9BT2Z0RlJxR21zcmNkdjJYOExhSHFxMjBHYS1CM0JmQXkzeElJMzg1dTBCZkpMZFR5WWp1a3hWeTZfb3J1OUVkYzdGOFB5Q1J1U0JiaThNRlVCaVdGVDlyaEdlRnI3enpmZXRYZkxVc3A1NGk2WlJBT1RGcDI5NHVST0Zqb0FpS1pqcFozRXBrYzgxOHFmdW5OOUgtTzQ1WW5zMU1iMTVuYkRFLWZxRkRpc19HX1VLV21JRnAxM2w1WA?oc=5
+    sources:
+      - publisher: Haaretz
+        title: Editorial | Eisenkot, you can't form a government without Arabs
+        url: https://news.google.com/rss/articles/CBMi-AFBVV95cUxQdDF5Zi1RUWNsRHY3Vk9aTGhnWWJjSU1wTzZ5S09OZ1g4WjdkYjB0OXY3bjhuNWJhc052SGQxdl9BT2Z0RlJxR21zcmNkdjJYOExhSHFxMjBHYS1CM0JmQXkzeElJMzg1dTBCZkpMZFR5WWp1a3hWeTZfb3J1OUVkYzdGOFB5Q1J1U0JiaThNRlVCaVdGVDlyaEdlRnI3enpmZXRYZkxVc3A1NGk2WlJBT1RGcDI5NHVST0Zqb0FpS1pqcFozRXBrYzgxOHFmdW5OOUgtTzQ1WW5zMU1iMTVuYkRFLWZxRkRpc19HX1VLV21JRnAxM2w1WA?oc=5
+        published: 2026-11-19T01:15
+    note: הוצע אוטומטית; ממתין לאישור.
