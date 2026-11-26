@@ -76,3 +76,17 @@ events:
     status: official
     note: השבעת 120 חברי הכנסת ובחירת יו"ר הכנסת. שעת הסיום משוערת.
     source: https://www.jns.org/news/israel-news/israels-26th-knesset-set-to-be-inaugurated-nov-10
+  - id: auto-confidence-vote-20261126
+    type: confidence_vote
+    date: 2026-11-26
+    candidate: גדי איזנקוט
+    result: passed
+    status: official
+    origin: auto
+    source: https://news.google.com/rss/articles/CBMivwFBVV95cUxORzhkTnJPZUZTWll2VFh0bjd5a1VLTEVPcWZRRXVtZ0NCZTJLMmJqYjNlNTYzZGRmcjBDcXVzQUIxREUtcTVGMU5qVFh2SGNpYVZleTRQbl9PZnZNcEFydk14c00yQTl4ZnZsNzJMS3prWGlxMmFUdkpXelJ1M3FJSmUxOUNFNEQwZnRRSEZEcTlQaHNIQ2NSa05Dc2VMR0EyWDB5VGo3MGNjSUNlTHlxN2FOU21fdDQwV1Z6dlJUb9IBxAFBVV95cUxPQUZTbEZkaU5LdkFuemlaNU82WGVPbEZGM0lvTHVXWUp5U3drTE8yYVZneC1rdjhxNWhZMWV1a1J0ek9NVGFVbTVSNmtiS2lWY0ZmbU9VNUpHeThIZ3hHSDdLVXF3Vld3ZXhmZnYzbWU1N2xTRjhnUXNsU05lTWQwLXZGSU5WWTQxTEhqV0N0ME4tV1h0NmZZTDhwTl96NktXczZ1VlhiSGNNOUFxNllYMjJSa3I0eXUwN1hRM21tSlZWOHht?oc=5
+    sources:
+      - publisher: The Times of Israel
+        title: Eisenkot hopes to get his government sworn in next week, regardless of Netanyahu trial drama
+        url: https://news.google.com/rss/articles/CBMivwFBVV95cUxORzhkTnJPZUZTWll2VFh0bjd5a1VLTEVPcWZRRXVtZ0NCZTJLMmJqYjNlNTYzZGRmcjBDcXVzQUIxREUtcTVGMU5qVFh2SGNpYVZleTRQbl9PZnZNcEFydk14c00yQTl4ZnZsNzJMS3prWGlxMmFUdkpXelJ1M3FJSmUxOUNFNEQwZnRRSEZEcTlQaHNIQ2NSa05Dc2VMR0EyWDB5VGo3MGNjSUNlTHlxN2FOU21fdDQwV1Z6dlJUb9IBxAFBVV95cUxPQUZTbEZkaU5LdkFuemlaNU82WGVPbEZGM0lvTHVXWUp5U3drTE8yYVZneC1rdjhxNWhZMWV1a1J0ek9NVGFVbTVSNmtiS2lWY0ZmbU9VNUpHeThIZ3hHSDdLVXF3Vld3ZXhmZnYzbWU1N2xTRjhnUXNsU05lTWQwLXZGSU5WWTQxTEhqV0N0ME4tV1h0NmZZTDhwTl96NktXczZ1VlhiSGNNOUFxNllYMjJSa3I0eXUwN1hRM21tSlZWOHht?oc=5
+        published: 2026-11-26T15:08
+    note: הוצע אוטומטית; ממתין לאישור.
